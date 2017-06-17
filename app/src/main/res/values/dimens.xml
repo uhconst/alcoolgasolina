@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="txtResultado">20dp</dimen>
+    <dimen name="margTopInput">10dp</dimen>
+    <dimen name="margTopLblInpt">10dp</dimen>
+    <dimen name="lblInput">20dp</dimen>
+</resources>
