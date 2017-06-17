@@ -13,6 +13,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.rtoshiro.util.format.MaskFormatter;
+import com.github.rtoshiro.util.format.SimpleMaskFormatter;
+import com.github.rtoshiro.util.format.text.MaskTextWatcher;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         listaHistorico = (ListView) findViewById(R.id.listViewHistorico);
 
+
         btnCalcular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,10 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void preencherListView() {
 
-        Log.d(">>preencherListView", "Dentro do metodo");
         //Recuperando o que foi gravado
-        if(lerHistorico()!=null){
-            Log.d(">>preencherListView", "Nao é nulo");
+        if((historicoResultado = lerHistorico())!=null){
             ArrayAdapter<String> adaptador = new ArrayAdapter<>(
                     getApplicationContext(),
                     android.R.layout.simple_list_item_1,
@@ -97,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
             );
 
             listaHistorico.setAdapter(adaptador);
-
-            Log.d(">>preencherListView", String.valueOf(historicoResultado.size()));
         }
     }
 
@@ -119,20 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 //Gerando buffer do arquivo lido
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-                //Recuperando textos do arquivo
-                bufferedReader.readLine();
-
                 String linhaHistorico = "";
 
                 //Percorrendo o arquivo enquanto tiver texto no buffer
                 while( (linhaHistorico = bufferedReader.readLine()) != null ){
-                    //historicoResultado +=  linhaHistorico;
-                    Log.d(">>>lerHistorico", "Dentro do while");
                     historicoResultado.add(linhaHistorico);
                 }
+                historico.close();
             }
-
-            historico.close();
 
 
         }
@@ -145,12 +141,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void gravarNoArquivo(String resultado) {
 
+        Calendar rightNow = Calendar.getInstance();
+
+        resultado += " - " + String.valueOf(rightNow.get(Calendar.DATE));
+
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(NOME_ARQUIVO, Context.MODE_PRIVATE));
             outputStreamWriter.write(resultado);
             outputStreamWriter.close();
-
-            Log.d(">>gravarNoArquivo", "Gravando no arquivo");
         }
         catch (IOException e){
             Log.v("MainActivity", e.toString());
